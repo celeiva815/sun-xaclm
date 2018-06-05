@@ -5,21 +5,18 @@
  */
 package sunauthorizator;
 
+import balanaauthorizator.BalanaAuthorizationManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Set;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -59,30 +56,47 @@ public class SunAuthorizator extends Application {
     @FXML
     public void selectXACMLRequest(ActionEvent actionEvent) throws IOException{
 
-        fileChooser = new FileChooser();
+        if (fileChooser == null)
+            fileChooser = new FileChooser();
+        
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("XACMLRequest", "*.xml"));
         xacmlRequest  = fileChooser.showOpenDialog(stage);
         xacmlRequestText.setText(xacmlRequest.getName());
-
+        
+        fileChooser.setInitialDirectory(xacmlRequest.getParentFile());
     }
     
     @FXML
     public void selectXACMLPolicies(ActionEvent actionEvent) throws IOException{
 
-        fileChooser = new FileChooser();
+        if (fileChooser == null)
+            fileChooser = new FileChooser();
+
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("XACMLRequest", "*.xml"));
         xacmlPolicies  = fileChooser.showOpenMultipleDialog(stage);
         xacmlPoliciesText.setText("" + xacmlPolicies.size() + " políticas seleccionadas.");
         
+        fileChooser.setInitialDirectory(xacmlRequest.getParentFile());
     }
     
     @FXML
-    public void checkAuthorization(ActionEvent actionEvent) {
+    public void checkSunAuthorization(ActionEvent actionEvent) {
         
         //TODO implements the logic
-        AuthorizationManager authorizator = new AuthorizationManager();
+        SunAuthorizationManager authorizator = new SunAuthorizationManager();
+        String response = authorizator.getRequestAndPoliciesResponse(xacmlRequest, xacmlPolicies);
+        
+        informationLabel.setText(response);
+        
+    }
+    
+        @FXML
+    public void checkBalanaAuthorization(ActionEvent actionEvent) {
+        
+        //TODO implements the logic
+        BalanaAuthorizationManager authorizator = new BalanaAuthorizationManager();
         String response = authorizator.getRequestAndPoliciesResponse(xacmlRequest, xacmlPolicies);
         
         informationLabel.setText(response);
